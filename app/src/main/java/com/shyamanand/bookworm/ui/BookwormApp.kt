@@ -3,6 +3,7 @@ package com.shyamanand.bookworm.ui
 import android.Manifest
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.shyamanand.bookworm.TAG
+import com.shyamanand.bookworm.ui.common.BookwormAppScreen
 import com.shyamanand.bookworm.ui.screens.*
 import kotlinx.coroutines.launch
 
@@ -46,7 +48,7 @@ fun BookwormApp(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             BottomNavigation(
-                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+                backgroundColor = MaterialTheme.colorScheme.surface
             ) {
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -66,10 +68,9 @@ fun BookwormApp(
                         }
                         BottomNavigationItem(
                             icon = {
-                                Icon(
-                                    painterResource(icon!!),
+                                Image(
+                                    painter = painterResource(icon!!),
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
                                     modifier = modifier.size(24.dp)
                                 )
                             },
@@ -89,9 +90,7 @@ fun BookwormApp(
                                     // Restore state when re-selecting a previously selected item
                                     restoreState = false
                                 }
-                            },
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.tertiary
+                            }
                         )
                     }
             }

@@ -1,5 +1,6 @@
 package com.shyamanand.bookworm.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -46,8 +47,9 @@ fun BookshelfScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Spacer(modifier = Modifier.size(height = 16.dp, width = 16.dp))
-                Icon(
-                    painterResource(R.drawable.books), contentDescription = null,
+                Image(
+                    painterResource(R.drawable.bookstack_special_lineal),
+                    contentDescription = null,
                     modifier = Modifier
                         .size(28.dp)
                 )
@@ -55,8 +57,7 @@ fun BookshelfScreen(
                     stringResource(R.string.your_books),
                     modifier = modifier
                         .padding(8.dp),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.displayMedium
+                    style = MaterialTheme.typography.displayLarge
                 )
             }
             Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)

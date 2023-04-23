@@ -2,7 +2,7 @@ package com.shyamanand.bookworm.ui
 
 import androidx.lifecycle.ViewModel
 import com.shyamanand.bookworm.ui.state.AppUiState
-import com.shyamanand.bookworm.ui.screens.BookwormAppScreen
+import com.shyamanand.bookworm.ui.common.BookwormAppScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

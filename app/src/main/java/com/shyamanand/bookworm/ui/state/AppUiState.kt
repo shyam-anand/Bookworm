@@ -1,6 +1,6 @@
 package com.shyamanand.bookworm.ui.state
 
-import com.shyamanand.bookworm.ui.screens.BookwormAppScreen
+import com.shyamanand.bookworm.ui.common.BookwormAppScreen
 
 data class AppUiState(
     val screen: BookwormAppScreen = BookwormAppScreen.Search,
