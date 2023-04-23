@@ -1,28 +1,90 @@
 package com.shyamanand.bookworm.ui.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.shyamanand.bookworm.R
+
+val CormorantGaramond = FontFamily(
+    Font(R.font.cormorantgaramond_300_light, FontWeight.W300),
+    Font(R.font.cormorantgaramond_300_lightitalic, FontWeight.W300),
+    Font(R.font.cormorantgaramond_400_regular, FontWeight.W400),
+    Font(R.font.cormorantgaramond_400_italic, FontWeight.W400),
+    Font(R.font.cormorantgaramond_500_medium, FontWeight.W500),
+    Font(R.font.cormorantgaramond_500_mediumitalic, FontWeight.W500),
+    Font(R.font.cormorantgaramond_600_semibold, FontWeight.W600),
+    Font(R.font.cormorantgaramond_600_semibolditalic, FontWeight.W600),
+    Font(R.font.cormorantgaramond_700_bold, FontWeight.W700),
+    Font(R.font.cormorantgaramond_700_bolditalic, FontWeight.W700)
+)
+
+val NanumGothic = FontFamily(
+    Font(R.font.nanumgothic_regular),
+    Font(R.font.nanumgothic_bold, FontWeight.W700),
+    Font(R.font.nanumgothic_extrabold, FontWeight.W800)
+)
 
 // Set of Material typography styles to start with
-val Typography = Typography(
-    body1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    )
-    /* Other default text styles to override
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
+val BookshelfTypography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W700,
+        fontSize = 30.sp
     ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+    displayMedium = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W600,
+        fontSize = 24.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W500,
+        fontSize = 20.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W400,
+        fontSize = 24.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W300,
+        fontSize = 20.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontWeight = FontWeight.W300,
+        fontSize = 16.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = CormorantGaramond,
+        fontSize = 30.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = CormorantGaramond,
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = CormorantGaramond
+    ),
+    titleLarge = TextStyle(
+        fontFamily = CormorantGaramond
+    ),
+    titleMedium = TextStyle(
+        fontFamily = CormorantGaramond
+    ),
+    titleSmall = TextStyle(
+        fontFamily = CormorantGaramond
+    ),
+    labelLarge = TextStyle(
+        fontFamily = NanumGothic
+    ),
+    labelMedium = TextStyle(
+        fontFamily = NanumGothic
+    ),
+    labelSmall = TextStyle(
+        fontFamily = NanumGothic
     )
-    */
 )
