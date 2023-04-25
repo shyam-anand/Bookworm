@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.common
+package com.shyamanand.bookworm.ui.screens.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

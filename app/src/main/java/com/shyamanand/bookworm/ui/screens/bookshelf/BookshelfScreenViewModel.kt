@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.bookshelf
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class BookshelfScreenViewModel(
     private val booksOfflineRepository: BooksRepository

@@ -1,20 +1,19 @@
 package com.shyamanand.bookworm.ui
 
-import android.Manifest
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,12 +24,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.shyamanand.bookworm.TAG
-import com.shyamanand.bookworm.ui.common.BookwormAppScreen
-import com.shyamanand.bookworm.ui.screens.*
+import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailScreen
+import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailsScreenViewModel
+import com.shyamanand.bookworm.ui.screens.bookshelf.BookshelfScreen
+import com.shyamanand.bookworm.ui.screens.camera.CameraScreen
+import com.shyamanand.bookworm.ui.screens.common.BookwormAppScreen
+import com.shyamanand.bookworm.ui.screens.search.SearchScreen
+import com.shyamanand.bookworm.ui.screens.search.SearchScreenViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -107,26 +109,13 @@ fun BookwormApp(
 
         val coroutineScope = rememberCoroutineScope()
 
-        val startScreen = if (true) {
-            BookwormAppScreen.Bookshelf
-        } else {
-            BookwormAppScreen.PermissionsRequest
-        }
-
-        val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+        val startScreen = BookwormAppScreen.Bookshelf
 
         NavHost(
             navController = navController,
             startDestination = startScreen.name,
             modifier = modifier.padding(innerPadding)
         ) {
-
-            composable(BookwormAppScreen.PermissionsRequest.name) {
-                PermissionRequest(
-                    cameraPermissionState = cameraPermissionState,
-                    modifier = modifier
-                )
-            }
 
             composable(BookwormAppScreen.Camera.name) {
                 CameraScreen(modifier)
@@ -176,27 +165,6 @@ fun BookwormApp(
                     modifier = modifier
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun PermissionRequest(modifier: Modifier = Modifier, cameraPermissionState: PermissionState) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Camera permission required")
-        Button(
-            onClick = { cameraPermissionState.launchPermissionRequest() },
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-        ) {
-            Text("PermissionRequest in BookwormApp.kt")
-            Toast.makeText(
-                LocalContext.current, "Permissions required", Toast.LENGTH_SHORT
-            ).show()
         }
     }
 }

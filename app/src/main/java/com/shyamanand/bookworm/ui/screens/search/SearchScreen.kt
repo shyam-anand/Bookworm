@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.search
 
 import android.util.Log
 import androidx.annotation.StringRes
@@ -25,7 +25,7 @@ import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.network.model.SearchResult
 import com.shyamanand.bookworm.network.model.SearchResultItem
-import com.shyamanand.bookworm.ui.common.BookCover
+import com.shyamanand.bookworm.ui.screens.common.BookCover
 import com.shyamanand.bookworm.ui.state.ResultsGridState
 import com.shyamanand.bookworm.ui.state.SearchbarState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme

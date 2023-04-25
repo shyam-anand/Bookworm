@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.bookdetails
 
 import android.graphics.Typeface
 import android.util.Log
@@ -32,6 +32,7 @@ import coil.request.ImageRequest
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.data.model.Book
+import com.shyamanand.bookworm.ui.screens.search.LoadingScreen
 import com.shyamanand.bookworm.ui.state.BookDetailsScreenState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme
 
@@ -214,13 +215,13 @@ fun Description(description: String, modifier: Modifier = Modifier) {
             .padding(top = 8.dp)
     ) {
         val resolver = LocalFontFamilyResolver.current
-        val style = MaterialTheme.typography.displaySmall
+        val style = MaterialTheme.typography.bodySmall
         val htmlTypeface: Typeface = remember(resolver, style) {
             resolver.resolve(
                 fontFamily = style.fontFamily,
                 fontWeight = style.fontWeight ?: FontWeight.Normal,
                 fontStyle = style.fontStyle ?: FontStyle.Normal,
-                fontSynthesis = style.fontSynthesis ?: FontSynthesis.All
+                fontSynthesis = style.fontSynthesis ?: FontSynthesis.None
             )
         }.value as Typeface
 

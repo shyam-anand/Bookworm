@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.getValue

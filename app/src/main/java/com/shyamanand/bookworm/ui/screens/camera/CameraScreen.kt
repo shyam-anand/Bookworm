@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.camera
 
 import android.Manifest
 import android.util.Log
@@ -7,7 +7,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -86,6 +86,7 @@ fun CameraScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraViewWinder(
     modifier: Modifier = Modifier,
@@ -97,23 +98,30 @@ fun CameraViewWinder(
     ) {
         Log.i(TAG, "Starting camera.")
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
-        IconButton(
-            onClick = takePicture,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
-                .size(64.dp)
+        Row(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                painterResource(R.drawable.camera_filled),
-                contentDescription = "Click!",
+            ElevatedCard(
+                onClick = takePicture,
                 modifier = Modifier
+                    .padding(bottom = 32.dp)
                     .size(64.dp)
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(Color.White)
-                    .padding(14.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+                    .background(Color.Transparent),
+                shape = CircleShape,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.circle),
+                    contentDescription = "Click!",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }

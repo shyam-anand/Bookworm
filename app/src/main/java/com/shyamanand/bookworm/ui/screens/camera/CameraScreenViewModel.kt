@@ -1,36 +1,24 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.camera
 
-import android.Manifest
-import android.content.ContentProvider
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.MediaStore.Audio.Media
-import android.text.Editable.Factory
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContentResolverCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.contentValuesOf
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import com.shyamanand.bookworm.TAG
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executor
 
 class CameraScreenViewModel : ViewModel() {
 
@@ -41,17 +29,7 @@ class CameraScreenViewModel : ViewModel() {
             }
         }
         private const val TAG = "Bookworm"
-        private const val FILENAME_FORMAT = "bw_yyyyMMdd_HHmmss"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS =
-            mutableListOf (
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
-            ).apply {
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            }.toTypedArray()
+        private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss"
     }
 
     fun takePicture(imageCapture: ImageCapture, context: Context) {

@@ -42,22 +42,22 @@ val BookshelfTypography = Typography(
     displaySmall = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W500,
-        fontSize = 20.sp
+        fontSize = 24.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W400,
-        fontSize = 24.sp
+        fontSize = 28.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W300,
-        fontSize = 20.sp
+        fontSize = 24.sp
     ),
     bodySmall = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W300,
-        fontSize = 16.sp
+        fontSize = 20.sp
     ),
     headlineLarge = TextStyle(
         fontFamily = CormorantGaramond,
