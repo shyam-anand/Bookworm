@@ -87,6 +87,10 @@ class CameraScreenViewModel : ViewModel() {
         Log.i(TAG, "Camera permission granted. Opening camera.")
         state = CameraScreenState.Preview
     }
+
+    fun showCameraPreview() {
+        state = CameraScreenState.Preview
+    }
 }
 
 fun Context.createImageCaptureUseCase(

@@ -18,7 +18,6 @@ import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.data.model.Book
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookCover(

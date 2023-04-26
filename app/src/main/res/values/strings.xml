@@ -20,4 +20,5 @@
     <string name="search_for_books">Search for books</string>
     <string name="start_typing">Start typing to see results</string>
     <string name="about_this_book">About this book</string>
+    <string name="search_by_image">Search by image</string>
 </resources>

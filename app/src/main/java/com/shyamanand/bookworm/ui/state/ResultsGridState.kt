@@ -5,8 +5,8 @@ import com.shyamanand.bookworm.network.model.SearchResult
 
 sealed interface ResultsGridState {
     data class Success(val searchResult: SearchResult) : ResultsGridState
-
-    object Error : ResultsGridState
+    data class Error(val error: String) : ResultsGridState
 
     object Loading: ResultsGridState
+    object Empty : ResultsGridState
 }

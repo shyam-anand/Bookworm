@@ -32,43 +32,39 @@ fun CameraScreen(
     state: CameraScreenState,
     onPermissionGranted: () -> Unit,
     onTakePicture: (ImageCapture, Context) -> Unit,
+    onTakeAgainClicked: () -> Unit,
+    onSearchClicked: (Uri, Context) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     val previewView = remember { PreviewView(context) }
     val imageCapture: MutableState<ImageCapture?> = remember { mutableStateOf(null) }
-    val cameraSelector = remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
 
-
-    LaunchedEffect(previewView) {
-        imageCapture.value = context.createImageCaptureUseCase(
-                previewView, lifecycleOwner, cameraSelector.value
+    Column(modifier = modifier.fillMaxSize()) {
+        when (state) {
+            CameraScreenState.Init -> CameraPermissionScreen(
+                onCameraPermissionGranted = onPermissionGranted
             )
-    }
-
-    when (state) {
-        CameraScreenState.Init -> CameraPermissionScreen(
-            onCameraPermissionGranted = onPermissionGranted
-        )
-        CameraScreenState.Preview -> CameraViewWinder(
-            modifier = modifier,
-            previewView = previewView,
-            takePicture = { onTakePicture(imageCapture.value!!, context) }
-        )
-        is CameraScreenState.PictureTaken -> CapturedImage(
-            imageUri = state.imageUri,
-            modifier = modifier,
-        )
-        is CameraScreenState.TextDetected -> ImageWithText(
-            imageUri = state.imageUri,
-            text = state.detectedText,
-            modifier = modifier,
-        )
-        is CameraScreenState.Error -> ErrorScreen(state.e)
-        is CameraScreenState.Uploaded -> ImageUploaded(imageUri = state.imageUri)
-        is CameraScreenState.Loading -> ImageWithText(imageUri = state.imageUri, text = listOf("Hang on a sec"))
+            CameraScreenState.Preview -> CameraViewWinder(
+                modifier = modifier,
+                previewView = previewView,
+                imageCapture = imageCapture,
+                takePicture = { onTakePicture(imageCapture.value!!, context) }
+            )
+            is CameraScreenState.PictureTaken -> CapturedImage(
+                modifier = modifier,
+                imageUri = state.imageUri,
+                onTakeAgainClicked = onTakeAgainClicked,
+                onSearchClicked = { uri, context -> onSearchClicked(uri, context) }
+            )
+            is CameraScreenState.Error -> ErrorScreen(state.e)
+            is CameraScreenState.Uploaded -> ImageUploaded(imageUri = state.imageUri)
+            is CameraScreenState.Loading -> ImageWithText(
+                imageUri = state.imageUri,
+                text = listOf("Hang on a sec")
+            )
+        }
     }
 }
 
@@ -111,15 +107,26 @@ fun ImageWithText(
 @Composable
 fun CapturedImage(
     imageUri: Uri?,
+    onTakeAgainClicked: () -> Unit,
+    onSearchClicked: (Uri, Context) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         imageUri?.let {
             Log.i(TAG, "Displaying captured image: $it")
             AsyncImage(model = it, contentDescription = null)
-        }
+            Row(modifier = modifier.fillMaxWidth()) {
+                Button(onClick = onTakeAgainClicked) {
+                    Text("Take again")
+                }
+                Button(onClick = { onSearchClicked(it, context)}) {
+                    Text("Search for books")
+                }
+            }
+        } ?: IllegalStateException("imageUri cannot be null")
     }
 }
 
@@ -178,8 +185,19 @@ fun CameraPermissionScreen(
 fun CameraViewWinder(
     modifier: Modifier = Modifier,
     previewView: PreviewView,
-    takePicture: () -> Unit
+    takePicture: () -> Unit,
+    imageCapture: MutableState<ImageCapture?>
 ) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraSelector = remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
+
+    LaunchedEffect(previewView) {
+        imageCapture.value = context.createImageCaptureUseCase(
+            previewView, lifecycleOwner, cameraSelector.value
+        )
+    }
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {

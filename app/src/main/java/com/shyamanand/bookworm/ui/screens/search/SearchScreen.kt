@@ -1,11 +1,8 @@
 package com.shyamanand.bookworm.ui.screens.search
 
+import android.net.Uri
 import android.util.Log
-import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -16,16 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
-import com.shyamanand.bookworm.TAG
-import com.shyamanand.bookworm.network.model.SearchResult
-import com.shyamanand.bookworm.network.model.SearchResultItem
-import com.shyamanand.bookworm.ui.screens.common.BookCover
+import com.shyamanand.bookworm.ui.screens.common.LoadingScreen
+import com.shyamanand.bookworm.ui.screens.common.SearchResultsGrid
 import com.shyamanand.bookworm.ui.state.ResultsGridState
 import com.shyamanand.bookworm.ui.state.SearchbarState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme
@@ -38,6 +35,8 @@ fun SearchScreen(
     onSearchStringCleared: () -> Unit,
     onBookSelected: (String) -> Unit,
     retryAction: () -> Unit,
+    resetSearchbar: () -> Unit,
+    searchByImage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -46,13 +45,24 @@ fun SearchScreen(
             .padding(8.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        Searchbar(
-            searchString = searchbarState.searchString,
-            onSearchStringChanged = onSearchStringChanged,
-            onSearchStringCleared = onSearchStringCleared,
-            onKeyboardDone = {},
-            modifier = modifier,
-        )
+        if (searchbarState is SearchbarState.ImageSearch) {
+            ImageSearchBar(image = searchbarState.image, resetSearchbar = resetSearchbar, modifier)
+        } else {
+            val searchString = if (searchbarState is SearchbarState.HasInput) {
+                searchbarState.searchString
+            } else {
+                ""
+            }
+            Searchbar(
+                searchString = searchString,
+                onSearchStringChanged = onSearchStringChanged,
+                onSearchStringCleared = onSearchStringCleared,
+                onKeyboardDone = {},
+                onSearchByImageClicked = searchByImage,
+                modifier = modifier,
+            )
+        }
+
         when (resultsGridState) {
             is ResultsGridState.Success -> {
                 Log.i("HomeScreen", "${resultsGridState.searchResult.totalItems} results")
@@ -66,32 +76,43 @@ fun SearchScreen(
                 }
             }
             is ResultsGridState.Loading -> LoadingScreen(
-                textId = if (
-                    searchbarState.searchString.isNotEmpty() &&
-                    searchbarState.searchString.length >= 3
+                text = if (
+                    searchbarState is SearchbarState.ImageSearch ||
+                    (searchbarState is SearchbarState.HasInput &&
+                            searchbarState.searchString.isNotEmpty() &&
+                            searchbarState.searchString.length >= 3)
                 ) {
-                    R.string.loading
+                    stringResource(R.string.loading)
                 } else {
-                    R.string.start_typing
+                    stringResource(R.string.start_typing)
                 },
                 modifier = modifier
             )
             is ResultsGridState.Error -> ErrorScreen(retryAction, modifier)
+            is ResultsGridState.Empty -> LoadingScreen("")
         }
     }
 }
 
 @Composable
-fun LoadingScreen(@StringRes textId: Int, modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(
-            text = stringResource(textId),
-            style = MaterialTheme.typography.displayLarge
+fun ImageSearchBar(image: Uri, resetSearchbar: () -> Unit, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        AsyncImage(
+            model = image,
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .padding(16.dp)
         )
+        Button(onClick = resetSearchbar, colors = ButtonDefaults.buttonColors(Color.Transparent)) {
+            Icon(
+                painter = painterResource(id = R.drawable.close),
+                contentDescription = "Clear",
+                modifier.size(24.dp)
+            )
+        }
     }
+    Divider()
 }
 
 @Composable
@@ -130,6 +151,7 @@ fun Searchbar(
     onSearchStringChanged: (String) -> Unit,
     onSearchStringCleared: () -> Unit,
     onKeyboardDone: () -> Unit,
+    onSearchByImageClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -178,98 +200,18 @@ fun Searchbar(
                         .padding(end = 10.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun SearchResultsGrid(
-    onPreviewClicked: (String) -> Unit,
-    searchResult: SearchResult,
-    modifier: Modifier = Modifier
-) {
-    Log.i("HomeScreen", "Rendering search results")
-    Column(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        LazyColumn(
-            contentPadding = PaddingValues(0.dp),
-            modifier = modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Log.i("HomeScreen", "Rendering results grid with ${searchResult.items.size} results")
-            items(
-                items = searchResult.items,
-                key = { book -> book.id }
+        } else {
+            IconButton(
+                onClick = onSearchByImageClicked,
+                modifier = Modifier.align(Alignment.CenterEnd)
             ) {
-                BookPreview(
-                    searchResultItem = it,
-                    onClick = { id ->
-                        run {
-                            Log.d(TAG, "Clicked $id")
-                            onPreviewClicked(id)
-                        }
-                    },
-                    modifier = modifier
+                Icon(
+                    painter = painterResource(id = R.drawable.camera_outlined),
+                    contentDescription = stringResource(id = R.string.search_by_image),
+                    modifier = Modifier
+                        .size(36.dp)
+                        .padding(end = 10.dp)
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun BookPreview(
-    searchResultItem: SearchResultItem,
-    onClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val book = searchResultItem.toBook()
-    Log.i("HomeScreen", "Rendering preview for ${book.title}")
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(2.dp)
-            .clickable { onClick(searchResultItem.id) },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp
-        ),
-        shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background)
-    ) {
-        Row(
-            modifier = modifier.padding(top = 2.dp, bottom = 2.dp)
-        ) {
-            BookCover(
-                book = book,
-                onClick = { onClick(searchResultItem.id) },
-                modifier = modifier
-            )
-            Column(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(
-                    text = book.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = modifier.padding(top = 12.dp)
-                )
-                book.subtitle?.let {
-                    if (book.subtitle.isNotEmpty()) {
-                        Text(
-                            text = book.subtitle,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-                if (book.authors.isNotEmpty()) {
-                    Text(
-                        text = book.authors,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
         }
     }
@@ -280,50 +222,13 @@ fun BookPreview(
 fun SearchbarPreview(modifier: Modifier = Modifier) {
     BookwormTheme(useDarkTheme = true) {
         Searchbar(
-            searchString = "book",
+            searchString = "",
             onSearchStringChanged = { },
             onSearchStringCleared = { },
             onKeyboardDone = { },
+            onSearchByImageClicked = {},
             modifier = modifier
         )
     }
 
 }
-
-//@Preview
-//@Composable
-//fun SearchResultsGridPreview(modifier: Modifier = Modifier) {
-//    val books = listOf(
-//        SearchResultItem(
-//            id = "IYaPEAAAQBAJ",
-//            selfLink = "https://www.googleapis.com/books/v1/volumes/IYaPEAAAQBAJ",
-//            volumeInfo = VolumeInfo(
-//                title = "Sapiens",
-//                imageLinks = ImageLinks(
-//                    smallThumbnail = "http://books.google.com/books/content?id=1EiJAwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
-//                    thumbnail = "http://books.google.com/books/content?id=1EiJAwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
-//                )
-//            )
-//        ),
-//        SearchResultItem(
-//            id = "1Gd0QgAACAAJ",
-//            selfLink = "https://www.googleapis.com/books/v1/volumes/1Gd0QgAACAAJ",
-//            volumeInfo = VolumeInfo(
-//                title = "Mapi, Sapi, and Tapi",
-//                imageLinks = ImageLinks(
-//                    smallThumbnail = "http://books.google.com/books/content?id=1Gd0QgAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api",
-//                    thumbnail = "http://books.google.com/books/content?id=1Gd0QgAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-//                )
-//            )
-//        )
-//    )
-//    BookwormTheme(useDarkTheme = false) {
-//        SearchResultsGrid(
-//            onPreviewClicked = { id ->
-//                Log.d("HomeScreenPreview", "clicked $id")
-//            },
-//            searchResult = SearchResult(2, books),
-//            modifier = modifier
-//        )
-//    }
-//}

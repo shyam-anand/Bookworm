@@ -1,6 +1,8 @@
 package com.shyamanand.bookworm.ui
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,16 +27,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.shyamanand.bookworm.TAG
+import com.shyamanand.bookworm.ui.screens.BookwormAppScreen
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailScreen
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailsScreenViewModel
 import com.shyamanand.bookworm.ui.screens.bookshelf.BookshelfScreen
 import com.shyamanand.bookworm.ui.screens.camera.CameraScreen
 import com.shyamanand.bookworm.ui.screens.camera.CameraScreenViewModel
-import com.shyamanand.bookworm.ui.screens.common.BookwormAppScreen
 import com.shyamanand.bookworm.ui.screens.search.SearchScreen
 import com.shyamanand.bookworm.ui.screens.search.SearchScreenViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookwormApp(
@@ -127,6 +130,11 @@ fun BookwormApp(
                     onPermissionGranted = { cameraScreenViewModel.permissionGranted() },
                     onTakePicture = { imageCapture, context ->
                         cameraScreenViewModel.takePicture(imageCapture, context)
+                    },
+                    onTakeAgainClicked = { cameraScreenViewModel.showCameraPreview() },
+                    onSearchClicked = { imageUri, context ->
+                        searchScreenViewModel.imageSearch(imageUri, context)
+                        navController.navigate(BookwormAppScreen.Search.name)
                     }
                 )
             }
@@ -149,12 +157,14 @@ fun BookwormApp(
                     onSearchStringChanged = { searchString ->
                         searchScreenViewModel.onSearchbarInput(searchString)
                     },
-                    onSearchStringCleared = { searchScreenViewModel.onSearchbarInput("") },
+                    onSearchStringCleared = { searchScreenViewModel.resetSearchbar() },
                     onBookSelected = { bookId ->
                         bookDetailsScreenViewModel.loadBook(bookId)
                         navController.navigate(BookwormAppScreen.BookDetails.name)
                     },
                     retryAction = { searchScreenViewModel.search() },
+                    resetSearchbar = { searchScreenViewModel.resetSearchbar() },
+                    searchByImage = { navController.navigate(BookwormAppScreen.Camera.name)},
                     modifier = modifier
                 )
             }

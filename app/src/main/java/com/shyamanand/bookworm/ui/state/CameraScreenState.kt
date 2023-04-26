@@ -24,14 +24,5 @@ sealed interface CameraScreenState {
         val imageUri: Uri?
     ) : CameraScreenState
 
-    // Text detected in the capture image
-    data class TextDetected(
-        // The text that was detected
-        val detectedText: List<String>,
-
-        // The local image URI
-        val imageUri: Uri
-    ) : CameraScreenState
-
     data class Error(val e: Exception) : CameraScreenState
 }

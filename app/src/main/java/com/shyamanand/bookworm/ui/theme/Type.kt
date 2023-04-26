@@ -79,12 +79,15 @@ val BookshelfTypography = Typography(
         fontFamily = CormorantGaramond
     ),
     labelLarge = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 24.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 20.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 16.sp
     )
 )
