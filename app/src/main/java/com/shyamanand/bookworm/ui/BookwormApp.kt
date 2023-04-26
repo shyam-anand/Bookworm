@@ -23,19 +23,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailScreen
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailsScreenViewModel
 import com.shyamanand.bookworm.ui.screens.bookshelf.BookshelfScreen
 import com.shyamanand.bookworm.ui.screens.camera.CameraScreen
+import com.shyamanand.bookworm.ui.screens.camera.CameraScreenViewModel
 import com.shyamanand.bookworm.ui.screens.common.BookwormAppScreen
 import com.shyamanand.bookworm.ui.screens.search.SearchScreen
 import com.shyamanand.bookworm.ui.screens.search.SearchScreenViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookwormApp(
     modifier: Modifier = Modifier
@@ -62,7 +62,8 @@ fun BookwormApp(
                         it.filledIcon != null
                     }
                     .forEach { screen ->
-                        val isCurrentScreen = currentScreen?.hierarchy?.any { it.route == screen.name } == true
+                        val isCurrentScreen =
+                            currentScreen?.hierarchy?.any { it.route == screen.name } == true
                         val icon = if (isCurrentScreen) {
                             screen.filledIcon
                         } else {
@@ -107,6 +108,8 @@ fun BookwormApp(
             factory = BookDetailsScreenViewModel.Factory
         )
 
+        val cameraScreenViewModel = CameraScreenViewModel()
+
         val coroutineScope = rememberCoroutineScope()
 
         val startScreen = BookwormAppScreen.Bookshelf
@@ -118,7 +121,14 @@ fun BookwormApp(
         ) {
 
             composable(BookwormAppScreen.Camera.name) {
-                CameraScreen(modifier)
+                CameraScreen(
+                    state = cameraScreenViewModel.state,
+                    modifier = modifier,
+                    onPermissionGranted = { cameraScreenViewModel.permissionGranted() },
+                    onTakePicture = { imageCapture, context ->
+                        cameraScreenViewModel.takePicture(imageCapture, context)
+                    }
+                )
             }
 
             composable(BookwormAppScreen.Bookshelf.name) {

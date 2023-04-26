@@ -5,37 +5,36 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.shyamanand.bookworm.TAG
+import com.shyamanand.bookworm.ui.state.CameraScreenState
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CameraScreenViewModel : ViewModel() {
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                CameraScreenViewModel()
-            }
-        }
-        private const val TAG = "Bookworm"
-        private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss"
-    }
+    var state: CameraScreenState by mutableStateOf(CameraScreenState.Init)
 
-    fun takePicture(imageCapture: ImageCapture, context: Context) {
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.ENGLISH)
+    companion object {
+
+        private const val TAG = "Bookworm"
+        private const val FILENAME_FORMAT = "yyyyMMddHHmmss"
+
+        private val name = "BW" + SimpleDateFormat(FILENAME_FORMAT, Locale.ENGLISH)
             .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
+
+        private val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
@@ -43,26 +42,50 @@ class CameraScreenViewModel : ViewModel() {
             }
         }
 
-        val outputFileOptions = ImageCapture.OutputFileOptions
-            .Builder(
-                context.contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-            .build()
+        private fun buildOutputFileOptions(context: Context): ImageCapture.OutputFileOptions {
+            return ImageCapture.OutputFileOptions
+                .Builder(
+                    context.contentResolver,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                .build()
+        }
+
+    }
+
+    fun takePicture(imageCapture: ImageCapture, context: Context) {
+
+        val outputFileOptions = buildOutputFileOptions(context)
 
         imageCapture.takePicture(
             outputFileOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
+
                 override fun onError(exception: ImageCaptureException) {
+                    Toast.makeText(
+                        context,
+                        // ToDo: Handle this exception
+                        "Failed to capture image: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                     Log.e(TAG, exception.stackTraceToString())
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    Log.i(TAG, "Image saved: ${outputFileResults.savedUri}")
+                    outputFileResults.savedUri?.let {
+                        Log.i(TAG, "Image saved: $it")
+                        state = CameraScreenState.PictureTaken(it)
+                    }
                 }
             })
+    }
+
+    fun permissionGranted() {
+        Log.i(TAG, "Camera permission granted. Opening camera.")
+        state = CameraScreenState.Preview
     }
 }
 
@@ -94,5 +117,4 @@ fun Context.createImageCaptureUseCase(
     )
 
     return imageCapture
-
 }

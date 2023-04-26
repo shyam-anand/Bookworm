@@ -1,6 +1,8 @@
 package com.shyamanand.bookworm.ui.screens.camera
 
 import android.Manifest
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -17,35 +19,133 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import coil.compose.AsyncImage
 import com.google.accompanist.permissions.*
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.TAG
-import com.shyamanand.bookworm.ui.theme.BookwormTheme
+import com.shyamanand.bookworm.ui.state.CameraScreenState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen(
-    modifier: Modifier = Modifier,
-    viewModel: CameraScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CameraScreenViewModel.Factory
-    )
+    state: CameraScreenState,
+    onPermissionGranted: () -> Unit,
+    onTakePicture: (ImageCapture, Context) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val previewView = remember {
-        PreviewView(context)
-    }
-    val cameraSelector = remember {
-        mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA)
+    val previewView = remember { PreviewView(context) }
+    val imageCapture: MutableState<ImageCapture?> = remember { mutableStateOf(null) }
+    val cameraSelector = remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
+
+
+    LaunchedEffect(previewView) {
+        imageCapture.value = context.createImageCaptureUseCase(
+                previewView, lifecycleOwner, cameraSelector.value
+            )
     }
 
-    val imageCapture: MutableState<ImageCapture?> = remember {
-        mutableStateOf(null)
+    when (state) {
+        CameraScreenState.Init -> CameraPermissionScreen(
+            onCameraPermissionGranted = onPermissionGranted
+        )
+        CameraScreenState.Preview -> CameraViewWinder(
+            modifier = modifier,
+            previewView = previewView,
+            takePicture = { onTakePicture(imageCapture.value!!, context) }
+        )
+        is CameraScreenState.PictureTaken -> CapturedImage(
+            imageUri = state.imageUri,
+            modifier = modifier,
+        )
+        is CameraScreenState.TextDetected -> ImageWithText(
+            imageUri = state.imageUri,
+            text = state.detectedText,
+            modifier = modifier,
+        )
+        is CameraScreenState.Error -> ErrorScreen(state.e)
+        is CameraScreenState.Uploaded -> ImageUploaded(imageUri = state.imageUri)
+        is CameraScreenState.Loading -> ImageWithText(imageUri = state.imageUri, text = listOf("Hang on a sec"))
     }
+}
+
+@Composable
+fun ErrorScreen(e: Exception, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val message = e.localizedMessage
+        message?.let {
+            Text(text = message, style = MaterialTheme.typography.displayLarge)
+        }
+        Text(text = e.stackTraceToString(), style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable
+fun ImageWithText(
+    imageUri: Uri?,
+    text: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        Log.i(TAG, "Displaying captured image: $imageUri")
+        AsyncImage(model = imageUri, contentDescription = null)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            text.forEach { t ->
+                Text(t)
+            }
+        }
+    }
+}
+
+@Composable
+fun CapturedImage(
+    imageUri: Uri?,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        imageUri?.let {
+            Log.i(TAG, "Displaying captured image: $it")
+            AsyncImage(model = it, contentDescription = null)
+        }
+    }
+}
+
+@Composable
+fun ImageUploaded(
+    imageUri: Uri?,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        imageUri?.let {
+            AsyncImage(model = imageUri, contentDescription = null)
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Image uploaded.")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun CameraPermissionScreen(
+    onCameraPermissionGranted: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
@@ -53,21 +153,8 @@ fun CameraScreen(
         cameraPermissionState.launchPermissionRequest()
     }
 
-    LaunchedEffect(previewView) {
-        imageCapture.value = context.createImageCaptureUseCase(
-            previewView, lifecycleOwner, cameraSelector.value
-        )
-    }
-
-
     if (cameraPermissionState.hasPermission) {
-        Log.i(TAG, "Camera permission granted")
-
-        CameraViewWinder(
-            modifier = modifier,
-            previewView = previewView,
-            takePicture = { viewModel.takePicture(imageCapture.value!!, context) }
-        )
+        onCameraPermissionGranted()
     } else {
         Log.w(TAG, "Does not have camera permission.")
         Column(
@@ -123,13 +210,5 @@ fun CameraViewWinder(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun CameraScreenPreview(modifier: Modifier = Modifier) {
-    BookwormTheme {
-        CameraScreen(modifier)
     }
 }
