@@ -102,9 +102,11 @@ class SearchScreenViewModel(
         resultsGridState = ResultsGridState.Loading
         val imageSearchJob = viewModelScope.launch {
             try {
-                val uploadedImage = textDetectionRepository.upload(imageUri, context)
-                val detectedText = textDetectionRepository.detectText(uploadedImage.name)
+                // ToDo Uncomment
+//                val uploadedImage = textDetectionRepository.upload(imageUri, context)
+//                val detectedText = textDetectionRepository.detectText(uploadedImage.name)
 
+                val detectedText = listOf("BRIAN GOETZ", "JAVA")
                 Log.i(TAG, "Received detected text: $detectedText")
 
                 if (detectedText.isNotEmpty()) {
@@ -128,5 +130,6 @@ class SearchScreenViewModel(
     fun resetSearchbar() {
         searchState.searchJob?.cancel()
         searchbarState = SearchbarState.Empty
+        resultsGridState = ResultsGridState.Empty
     }
 }

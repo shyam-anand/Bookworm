@@ -91,6 +91,10 @@ class CameraScreenViewModel : ViewModel() {
     fun showCameraPreview() {
         state = CameraScreenState.Preview
     }
+
+    fun reset() {
+        state = CameraScreenState.Init
+    }
 }
 
 fun Context.createImageCaptureUseCase(

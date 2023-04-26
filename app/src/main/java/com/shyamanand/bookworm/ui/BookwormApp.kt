@@ -164,7 +164,10 @@ fun BookwormApp(
                     },
                     retryAction = { searchScreenViewModel.search() },
                     resetSearchbar = { searchScreenViewModel.resetSearchbar() },
-                    searchByImage = { navController.navigate(BookwormAppScreen.Camera.name)},
+                    searchByImage = {
+                    cameraScreenViewModel.reset()
+                        navController.navigate(BookwormAppScreen.Camera.name)
+                                    },
                     modifier = modifier
                 )
             }
