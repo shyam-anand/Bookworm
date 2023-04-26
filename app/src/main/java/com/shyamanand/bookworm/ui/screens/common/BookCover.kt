@@ -1,4 +1,4 @@
-package com.shyamanand.bookworm.ui.common
+package com.shyamanand.bookworm.ui.screens.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.data.model.Book
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

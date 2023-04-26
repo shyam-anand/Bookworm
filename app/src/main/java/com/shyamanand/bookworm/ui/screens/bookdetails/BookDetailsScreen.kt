@@ -1,11 +1,13 @@
-package com.shyamanand.bookworm.ui.screens
+package com.shyamanand.bookworm.ui.screens.bookdetails
 
 import android.graphics.Typeface
 import android.util.Log
 import android.widget.TextView
 import androidx.annotation.StringRes
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -32,6 +34,7 @@ import coil.request.ImageRequest
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.data.model.Book
+import com.shyamanand.bookworm.ui.screens.common.LoadingScreen
 import com.shyamanand.bookworm.ui.state.BookDetailsScreenState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme
 
@@ -43,7 +46,10 @@ fun BookDetailScreen(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        is BookDetailsScreenState.Loading -> LoadingScreen(R.string.loading, modifier)
+        is BookDetailsScreenState.Loading -> LoadingScreen(
+            stringResource(R.string.loading),
+            modifier
+        )
         is BookDetailsScreenState.Error -> ErrorCard(R.string.something_went_wrong, modifier)
         is BookDetailsScreenState.Success -> BookDetails(
             state.book,
@@ -214,13 +220,13 @@ fun Description(description: String, modifier: Modifier = Modifier) {
             .padding(top = 8.dp)
     ) {
         val resolver = LocalFontFamilyResolver.current
-        val style = MaterialTheme.typography.displaySmall
+        val style = MaterialTheme.typography.bodySmall
         val htmlTypeface: Typeface = remember(resolver, style) {
             resolver.resolve(
                 fontFamily = style.fontFamily,
                 fontWeight = style.fontWeight ?: FontWeight.Normal,
                 fontStyle = style.fontStyle ?: FontStyle.Normal,
-                fontSynthesis = style.fontSynthesis ?: FontSynthesis.All
+                fontSynthesis = style.fontSynthesis ?: FontSynthesis.None
             )
         }.value as Typeface
 

@@ -42,22 +42,22 @@ val BookshelfTypography = Typography(
     displaySmall = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W500,
-        fontSize = 20.sp
+        fontSize = 24.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W400,
-        fontSize = 24.sp
+        fontSize = 28.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W300,
-        fontSize = 20.sp
+        fontSize = 24.sp
     ),
     bodySmall = TextStyle(
         fontFamily = CormorantGaramond,
         fontWeight = FontWeight.W300,
-        fontSize = 16.sp
+        fontSize = 20.sp
     ),
     headlineLarge = TextStyle(
         fontFamily = CormorantGaramond,
@@ -79,12 +79,15 @@ val BookshelfTypography = Typography(
         fontFamily = CormorantGaramond
     ),
     labelLarge = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 24.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 20.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = NanumGothic
+        fontFamily = NanumGothic,
+        fontSize = 16.sp
     )
 )
