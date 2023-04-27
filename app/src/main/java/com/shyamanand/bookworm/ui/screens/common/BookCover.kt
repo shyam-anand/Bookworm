@@ -38,7 +38,7 @@ fun BookCover(
             AsyncImage(
                 model = book.imageUrl.replace("http:", "https:"),
                 contentDescription = stringResource(R.string.cover_image, book.title),
-                contentScale = ContentScale.FillHeight,
+                contentScale = ContentScale.Fit,
                 modifier = modifier.size(200.dp),
                 error = painterResource(R.drawable.no_image)
             )

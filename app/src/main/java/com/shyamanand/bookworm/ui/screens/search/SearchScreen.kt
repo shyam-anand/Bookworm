@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -46,7 +47,13 @@ fun SearchScreen(
         verticalArrangement = Arrangement.Top
     ) {
         if (searchbarState is SearchbarState.ImageSearch) {
-            ImageSearchBar(image = searchbarState.image, resetSearchbar = resetSearchbar, modifier)
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                ImageSearchBar(
+                    image = searchbarState.image,
+                    resetSearchbar = resetSearchbar,
+                    modifier = modifier.fillMaxWidth()
+                )
+            }
         } else {
             val searchString = if (searchbarState is SearchbarState.HasInput) {
                 searchbarState.searchString
@@ -96,19 +103,41 @@ fun SearchScreen(
 
 @Composable
 fun ImageSearchBar(image: Uri, resetSearchbar: () -> Unit, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        AsyncImage(
-            model = image,
-            contentDescription = null,
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp, top = 8.dp)
+    ) {
+        ElevatedCard(
             modifier = Modifier
-                .size(120.dp)
-                .padding(16.dp)
-        )
-        Button(onClick = resetSearchbar, colors = ButtonDefaults.buttonColors(Color.Transparent)) {
+                .weight(1f)
+                .padding(start = 8.dp)
+                .wrapContentWidth(Alignment.Start)
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(height = 120.dp, width = 72.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Button(
+            onClick = resetSearchbar,
+            colors = ButtonDefaults.buttonColors(Color.Transparent),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+                .wrapContentWidth(Alignment.Start)
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.close),
                 contentDescription = "Clear",
-                modifier.size(24.dp)
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(end = 10.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
