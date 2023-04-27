@@ -13,10 +13,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.data.model.Book
+import com.shyamanand.bookworm.network.model.SearchResultItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +27,7 @@ fun BookCover(
     book: Book,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    height: Int =  200,
+    height: Int = 200,
     width: Int = 130
 ) {
     ElevatedCard(
@@ -38,7 +41,7 @@ fun BookCover(
             AsyncImage(
                 model = book.imageUrl.replace("http:", "https:"),
                 contentDescription = stringResource(R.string.cover_image, book.title),
-                contentScale = ContentScale.FillHeight,
+                contentScale = ContentScale.Fit,
                 modifier = modifier.size(200.dp),
                 error = painterResource(R.drawable.no_image)
             )
@@ -46,6 +49,23 @@ fun BookCover(
             CoverPlaceholder(title = book.title, author = book.authors)
         }
     }
+}
+
+@Composable
+fun BookCover(
+    searchResultItem: SearchResultItem,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    height: Int = 200,
+    width: Int = 130
+) {
+    BookCover(
+        book = searchResultItem.toBook(),
+        onClick = onClick,
+        modifier = modifier,
+        height = height,
+        width = width
+    )
 }
 
 @Composable
@@ -59,11 +79,13 @@ fun CoverPlaceholder(title: String, author: String, modifier: Modifier = Modifie
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSecondary,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
+                .padding(8.dp),
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
         Text(
             text = author,
@@ -71,7 +93,8 @@ fun CoverPlaceholder(title: String, author: String, modifier: Modifier = Modifie
             color = MaterialTheme.colorScheme.onSecondary,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
+                .padding(8.dp),
+            fontSize = 10.sp
         )
     }
 }

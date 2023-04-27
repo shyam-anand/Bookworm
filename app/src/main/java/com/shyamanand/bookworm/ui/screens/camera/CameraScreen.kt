@@ -4,9 +4,12 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
@@ -26,6 +32,7 @@ import com.google.accompanist.permissions.*
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.ui.state.CameraScreenState
+import com.shyamanand.bookworm.ui.theme.BookwormTheme
 
 @Composable
 fun CameraScreen(
@@ -59,7 +66,6 @@ fun CameraScreen(
                 onSearchClicked = { uri, context -> onSearchClicked(uri, context) }
             )
             is CameraScreenState.Error -> ErrorScreen(state.e)
-            is CameraScreenState.Uploaded -> ImageUploaded(imageUri = state.imageUri)
             is CameraScreenState.Loading -> ImageWithText(
                 imageUri = state.imageUri,
                 text = listOf("Hang on a sec")
@@ -112,36 +118,80 @@ fun CapturedImage(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    Column(
+    Box(
         modifier = modifier.fillMaxSize()
     ) {
         imageUri?.let {
             Log.i(TAG, "Displaying captured image: $it")
-            AsyncImage(model = it, contentDescription = null)
-            Row(modifier = modifier.fillMaxWidth()) {
-                Button(onClick = onTakeAgainClicked) {
-                    Text("Take again")
-                }
-                Button(onClick = { onSearchClicked(it, context)}) {
-                    Text("Search for books")
-                }
+            ElevatedCard(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
+            ) {
+                AsyncImage(
+                    model = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight
+                )
+            }
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 64.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                CapturedImageActionButton(
+                    icon = R.drawable.cancel,
+                    description = R.string.cancel,
+                    onClick = onTakeAgainClicked
+                )
+
+                CapturedImageActionButton(
+                    icon = R.drawable.check,
+                    description = R.string.ok,
+                ) { onSearchClicked(it, context) }
             }
         } ?: IllegalStateException("imageUri cannot be null")
     }
 }
 
 @Composable
-fun ImageUploaded(
-    imageUri: Uri?,
-    modifier: Modifier = Modifier
+fun CapturedImageActionButton(
+    @DrawableRes icon: Int,
+    @StringRes description: Int,
+    onClick: () -> Unit
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .clip(CircleShape)
     ) {
-        imageUri?.let {
-            AsyncImage(model = imageUri, contentDescription = null)
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Image uploaded.")
+        Image(
+            painter = painterResource(icon),
+            contentDescription = stringResource(description)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CapturedImageButtonsPreview(modifier: Modifier = Modifier) {
+    BookwormTheme {
+        Surface {
+            Row(
+                modifier = modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CapturedImageActionButton(
+                    R.drawable.cancel, R.string.cancel
+                ) {}
+                CapturedImageActionButton(
+                    R.drawable.check, R.string.ok
+                ) {}
             }
         }
     }
