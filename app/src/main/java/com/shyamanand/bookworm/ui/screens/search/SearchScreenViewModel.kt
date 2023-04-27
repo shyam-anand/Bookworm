@@ -104,7 +104,6 @@ class SearchScreenViewModel(
             try {
                 val uploadedImage = textDetectionRepository.upload(imageUri, context)
                 val detectedText = textDetectionRepository.detectText(uploadedImage.name)
-
                 Log.i(TAG, "Received detected text: $detectedText")
 
                 if (detectedText.isNotEmpty()) {
@@ -128,5 +127,6 @@ class SearchScreenViewModel(
     fun resetSearchbar() {
         searchState.searchJob?.cancel()
         searchbarState = SearchbarState.Empty
+        resultsGridState = ResultsGridState.Empty
     }
 }

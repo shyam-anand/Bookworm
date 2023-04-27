@@ -15,10 +15,6 @@ sealed interface CameraScreenState {
         val imageUri: Uri
     ) : CameraScreenState
 
-    data class Uploaded(
-        val imageUri: Uri
-    ) : CameraScreenState
-
     // Image captured
     data class PictureTaken(
         val imageUri: Uri?

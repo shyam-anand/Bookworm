@@ -2,7 +2,9 @@ package com.shyamanand.bookworm.ui.screens.search
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -11,13 +13,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
@@ -46,7 +52,11 @@ fun SearchScreen(
         verticalArrangement = Arrangement.Top
     ) {
         if (searchbarState is SearchbarState.ImageSearch) {
-            ImageSearchBar(image = searchbarState.image, resetSearchbar = resetSearchbar, modifier)
+            ImageSearchBar(
+                image = searchbarState.image,
+                resetSearchbar = resetSearchbar,
+                modifier = Modifier.padding(8.dp)
+            )
         } else {
             val searchString = if (searchbarState is SearchbarState.HasInput) {
                 searchbarState.searchString
@@ -96,23 +106,66 @@ fun SearchScreen(
 
 @Composable
 fun ImageSearchBar(image: Uri, resetSearchbar: () -> Unit, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        AsyncImage(
-            model = image,
-            contentDescription = null,
+    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            stringResource(R.string.finding_books_by_image),
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
-                .size(120.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .wrapContentWidth(Alignment.Start)
         )
-        Button(onClick = resetSearchbar, colors = ButtonDefaults.buttonColors(Color.Transparent)) {
+        ImageBox(
+            image = image,
+            resetSearchbar = resetSearchbar,
+            modifier = modifier
+                .wrapContentWidth(Alignment.End)
+                .weight(1f)
+        )
+    }
+    Divider()
+}
+
+@Composable
+fun ImageBox(modifier: Modifier = Modifier, image: Uri, resetSearchbar: () -> Unit) {
+    val iconSize = 24.dp
+    val offsetInPx = LocalDensity.current.run { (iconSize / 2).roundToPx() }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding((iconSize / 2))
+    ) {
+        ElevatedCard(
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .wrapContentWidth(Alignment.Start)
+                .align(Alignment.CenterEnd)
+                .size(height = 120.dp, width = 72.dp)
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        IconButton(
+            onClick = resetSearchbar,
+            modifier = Modifier
+                .offset {
+                    IntOffset(x = +offsetInPx, y = -offsetInPx)
+                }
+                .clip(CircleShape)
+                .background(Color.White)
+                .size(iconSize)
+                .align(Alignment.TopEnd)
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.close),
                 contentDescription = "Clear",
-                modifier.size(24.dp)
+                tint = Color.Black
             )
         }
     }
-    Divider()
 }
 
 @Composable

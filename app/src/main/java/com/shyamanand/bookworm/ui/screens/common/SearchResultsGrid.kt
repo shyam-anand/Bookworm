@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,49 +47,51 @@ fun SearchResultsGrid(
                     },
                     modifier = modifier
                 )
-                Divider()
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookPreview(
     searchResultItem: SearchResultItem,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Log.i("HomeScreen", "Rendering preview for $searchResultItem")
     val book = searchResultItem.toBook()
-    Log.i("HomeScreen", "Rendering preview for ${book.title}")
-    Row(
-        modifier = modifier.padding(top = 2.dp, bottom = 2.dp)
+    ElevatedCard(
+        onClick = { onClick(searchResultItem.id) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background)
     ) {
-        BookCover(
-            book = book,
-            onClick = { onClick(searchResultItem.id) },
-            modifier = modifier
-        )
-        Column(
-            modifier = Modifier.padding(8.dp)
+        Row(
+            modifier = modifier.padding(top = 2.dp, bottom = 2.dp)
         ) {
-            Text(
-                text = book.title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = modifier.padding(top = 12.dp)
+            BookCover(
+                searchResultItem = searchResultItem,
+                modifier = modifier,
+                onClick = onClick
             )
-            book.subtitle?.let {
-                if (book.subtitle.isNotEmpty()) {
+            Column(
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(
+                    text = searchResultItem.volumeInfo.title,
+                    style = MaterialTheme.typography.displaySmall,
+                    modifier = modifier.padding(top = 12.dp),
+                    maxLines = 2
+                )
+                if (book.authors.isNotEmpty()) {
                     Text(
-                        text = book.subtitle,
-                        style = MaterialTheme.typography.bodyMedium
+                        text = searchResultItem.volumeInfo.authors.joinToString(", "),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2
                     )
                 }
-            }
-            if (book.authors.isNotEmpty()) {
-                Text(
-                    text = book.authors,
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
         }
     }

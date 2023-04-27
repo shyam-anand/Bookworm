@@ -21,4 +21,7 @@
     <string name="start_typing">Start typing to see results</string>
     <string name="about_this_book">About this book</string>
     <string name="search_by_image">Search by image</string>
+    <string name="finding_books_by_image">Finding books</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 </resources>

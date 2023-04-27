@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFontFamilyResolver
@@ -183,11 +185,13 @@ fun BookInfo(book: Book, modifier: Modifier = Modifier) {
 @Composable
 fun Ratings(ratingsCount: Int, averageRating: Float, modifier: Modifier = Modifier) {
     Card(modifier = modifier.padding(start = 16.dp)) {
-        Column {
-            Row(modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
+        Row(modifier = modifier
+            .height(IntrinsicSize.Min)
+            .padding(4.dp)) {
+            Row(modifier = Modifier.padding(start = 4.dp, end = 4.dp)) {
                 Text(
                     text = "$averageRating",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 4.dp, end = 4.dp)
                 )
                 Icon(
@@ -200,13 +204,13 @@ fun Ratings(ratingsCount: Int, averageRating: Float, modifier: Modifier = Modifi
             }
             Divider(
                 modifier = Modifier
-                    .size(width = 80.dp, height = 1.dp)
-                    .padding(start = 8.dp, end = 8.dp)
+                    .width(1.dp)
+                    .fillMaxHeight()
             )
             Text(
                 text = "$ratingsCount ratings",
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 4.dp, end = 4.dp)
             )
         }
     }
@@ -255,33 +259,48 @@ fun ShelfButton(
 ) {
     Row(
         modifier = modifier
-            .padding(8.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         if (inShelf) {
-            Button(
-                onClick = onRemoveFromShelfClicked,
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+            ShelfButton(
+                imageVector = Icons.Default.Clear,
+                description = "Clear",
+                label = R.string.remove_from_shelf,
+                color = MaterialTheme.colorScheme.secondary
             ) {
-                Icon(imageVector = Icons.Default.Clear, contentDescription = null)
-                Text(
-                    stringResource(R.string.remove_from_shelf),
-                    style = MaterialTheme.typography.labelMedium
-                )
+                onRemoveFromShelfClicked()
             }
         } else {
-            Button(
-                onClick = onAddToShelfClicked,
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+            ShelfButton(
+                imageVector = Icons.Default.Add,
+                description = "Add",
+                label = R.string.add_to_shelf,
+                color = MaterialTheme.colorScheme.primary
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                Text(
-                    stringResource(R.string.add_to_shelf),
-                    style = MaterialTheme.typography.labelMedium
-                )
+                onAddToShelfClicked()
             }
         }
+    }
+}
+
+@Composable
+fun ShelfButton(
+    imageVector: ImageVector,
+    description: String?,
+    label: Int,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(color)
+    ) {
+        Icon(imageVector = imageVector, contentDescription = description)
+        Text(
+            stringResource(label),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
@@ -302,7 +321,7 @@ fun ErrorCard(@StringRes error: Int, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun BookDetailScreenPreview(modifier: Modifier = Modifier) {
-    BookwormTheme(useDarkTheme = true) {
+    BookwormTheme {
         Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             BookDetails(
                 book = Book(
