@@ -56,7 +56,7 @@ val BookshelfTypography = Typography(
     ),
     bodySmall = TextStyle(
         fontFamily = CormorantGaramond,
-        fontWeight = FontWeight.W300,
+        fontWeight = FontWeight.W400,
         fontSize = 20.sp
     ),
     headlineLarge = TextStyle(
