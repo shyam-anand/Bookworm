@@ -9,12 +9,26 @@ import com.shyamanand.bookworm.network.TextDetectionService
 import com.shyamanand.bookworm.network.GoogleApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     private val googleBooksBaseUrl = "https://www.googleapis.com/books/v1/"
     private val textDetectionBaseUrl = "https://bookwormapp.co.in/photos/detectText/"
+
+    private fun httpInterceptor(): HttpLoggingInterceptor {
+        val interceptor = HttpLoggingInterceptor()
+        // ToDo Remove
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        return interceptor
+    }
+
+    private val httpClient: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(httpInterceptor())
+        .build()
+
 
     private val responseFormat = Json { ignoreUnknownKeys = true }
 
@@ -24,9 +38,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private val googleBooksApiClient = Retrofit.Builder()
         .addConverterFactory(jsonConverterFactory)
         .baseUrl(googleBooksBaseUrl)
+        .client(httpClient)
         .build()
 
-    private val googleApiService : GoogleApiService by lazy {
+    private val googleApiService: GoogleApiService by lazy {
         googleBooksApiClient.create(GoogleApiService::class.java)
     }
 
@@ -35,7 +50,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         .baseUrl(textDetectionBaseUrl)
         .build()
 
-    private val textDetectionService : TextDetectionService by lazy {
+    private val textDetectionService: TextDetectionService by lazy {
         textDetectionClient.create(TextDetectionService::class.java)
     }
 
