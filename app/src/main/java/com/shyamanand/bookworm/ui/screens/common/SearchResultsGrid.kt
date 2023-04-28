@@ -13,13 +13,15 @@ import com.shyamanand.bookworm.TAG
 import com.shyamanand.bookworm.network.model.SearchResult
 import com.shyamanand.bookworm.network.model.SearchResultItem
 
+const val TAG = "SearchResultsGrid"
+
 @Composable
 fun SearchResultsGrid(
     onPreviewClicked: (String) -> Unit,
     searchResult: SearchResult,
     modifier: Modifier = Modifier
 ) {
-    Log.i("HomeScreen", "Rendering search results")
+    Log.i(TAG, "Rendering search results")
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -32,7 +34,7 @@ fun SearchResultsGrid(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Top
         ) {
-            Log.i("HomeScreen", "Rendering results grid with ${searchResult.items.size} results")
+            Log.i(TAG, "Rendering results grid with ${searchResult.items.size} results")
             items(
                 items = searchResult.items,
                 key = { book -> book.id }
@@ -59,7 +61,10 @@ fun BookPreview(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Log.i("HomeScreen", "Rendering preview for $searchResultItem")
+    Log.i(
+        TAG,
+        "Rendering preview for ${searchResultItem.volumeInfo.title} (${searchResultItem.selfLink}"
+    )
     val book = searchResultItem.toBook()
     ElevatedCard(
         onClick = { onClick(searchResultItem.id) },

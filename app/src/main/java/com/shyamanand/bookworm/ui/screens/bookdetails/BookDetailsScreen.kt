@@ -223,23 +223,24 @@ fun Description(description: String, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(top = 8.dp)
     ) {
-        val resolver = LocalFontFamilyResolver.current
-        val style = MaterialTheme.typography.bodySmall
-        val htmlTypeface: Typeface = remember(resolver, style) {
-            resolver.resolve(
-                fontFamily = style.fontFamily,
-                fontWeight = style.fontWeight ?: FontWeight.Normal,
-                fontStyle = style.fontStyle ?: FontStyle.Normal,
-                fontSynthesis = style.fontSynthesis ?: FontSynthesis.None
-            )
-        }.value as Typeface
-
+        Log.i(TAG, "Description: $description")
         if (description.isNotEmpty()) {
+            val resolver = LocalFontFamilyResolver.current
+            val style = MaterialTheme.typography.bodyMedium
+            val htmlTypeface: Typeface = remember(resolver, style) {
+                resolver.resolve(
+                    fontFamily = style.fontFamily,
+                    fontWeight = style.fontWeight ?: FontWeight.Normal,
+                    fontStyle = style.fontStyle ?: FontStyle.Normal,
+                    fontSynthesis = style.fontSynthesis ?: FontSynthesis.None
+                )
+            }.value as Typeface
+
             AndroidView(
                 factory = { context ->
                     TextView(context).apply {
                         text =
-                            HtmlCompat.fromHtml(description, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                            HtmlCompat.fromHtml(description, HtmlCompat.FROM_HTML_MODE_COMPACT)
                         typeface = htmlTypeface
 
                     }
