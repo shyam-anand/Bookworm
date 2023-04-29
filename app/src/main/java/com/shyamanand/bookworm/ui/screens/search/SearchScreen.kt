@@ -5,30 +5,24 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
+import com.shyamanand.bookworm.ui.screens.common.BooksGrid
 import com.shyamanand.bookworm.ui.screens.common.LoadingScreen
-import com.shyamanand.bookworm.ui.screens.common.SearchResultsGrid
 import com.shyamanand.bookworm.ui.state.ResultsGridState
 import com.shyamanand.bookworm.ui.state.SearchbarState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme
@@ -67,7 +61,6 @@ fun SearchScreen(
                 searchString = searchString,
                 onSearchStringChanged = onSearchStringChanged,
                 onSearchStringCleared = onSearchStringCleared,
-                onKeyboardDone = {},
                 onSearchByImageClicked = searchByImage,
                 modifier = modifier,
             )
@@ -75,12 +68,12 @@ fun SearchScreen(
 
         when (resultsGridState) {
             is ResultsGridState.Success -> {
-                Log.i("HomeScreen", "${resultsGridState.searchResult.totalItems} results")
-                when (resultsGridState.searchResult.items.size) {
+                Log.i("HomeScreen", "${resultsGridState.searchResult} results")
+                when (resultsGridState.searchResult.size) {
                     0 -> NoResults()
-                    else -> SearchResultsGrid(
-                        onPreviewClicked = onBookSelected,
-                        searchResult = resultsGridState.searchResult,
+                    else -> BooksGrid(
+                        onCoverClicked = onBookSelected,
+                        books = resultsGridState.searchResult,
                         modifier = modifier
                     )
                 }
@@ -197,13 +190,11 @@ fun NoResults(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Searchbar(
     searchString: String,
     onSearchStringChanged: (String) -> Unit,
     onSearchStringCleared: () -> Unit,
-    onKeyboardDone: () -> Unit,
     onSearchByImageClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -211,34 +202,12 @@ fun Searchbar(
         modifier = modifier.fillMaxWidth()
     ) {
         Column {
-            val focusRequester = remember { FocusRequester() }
-            OutlinedTextField(
-                value = searchString,
-                onValueChange = onSearchStringChanged,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                keyboardActions = KeyboardActions(
-                    onDone = { onKeyboardDone() }
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.searchbox_placeholder)
-                    )
-                },
-                singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            SearchTextField(
+                modifier = modifier,
+                searchString = searchString,
+                onSearchStringChanged = onSearchStringChanged,
+                onSearchFieldFocusChanged = {}
             )
-            if (searchString.isEmpty()) {
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
-                }
-            }
         }
         if (searchString.isNotEmpty()) {
             IconButton(
@@ -270,15 +239,66 @@ fun Searchbar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchTextField(
+    modifier: Modifier = Modifier,
+    searchString: String,
+    onSearchStringChanged: (String) -> Unit,
+    onSearchFieldFocusChanged: () -> Unit
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp, end = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            TextField(
+                value = searchString,
+                onValueChange = onSearchStringChanged,
+                textStyle = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { onSearchFieldFocusChanged() },
+                colors = TextFieldDefaults
+                    .textFieldColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                shape = CircleShape,
+                leadingIcon = {
+                    Icon(
+                        painterResource(R.drawable.search_outlined),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            )
+
+            if (searchString.isEmpty()) {
+                Text(
+                    stringResource(R.string.searchbox_placeholder),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+
+        }
+
+    }
+
+
+}
+
 @Preview
 @Composable
 fun SearchbarPreview(modifier: Modifier = Modifier) {
-    BookwormTheme(useDarkTheme = true) {
+    BookwormTheme {
         Searchbar(
             searchString = "",
             onSearchStringChanged = { },
             onSearchStringCleared = { },
-            onKeyboardDone = { },
             onSearchByImageClicked = {},
             modifier = modifier
         )

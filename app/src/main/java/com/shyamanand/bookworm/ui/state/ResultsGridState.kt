@@ -1,10 +1,10 @@
 package com.shyamanand.bookworm.ui.state
 
-import com.shyamanand.bookworm.network.model.SearchResult
+import com.shyamanand.bookworm.data.model.Book
 
 
 sealed interface ResultsGridState {
-    data class Success(val searchResult: SearchResult) : ResultsGridState
+    data class Success(val searchResult: List<Book>) : ResultsGridState
     data class Error(val error: String) : ResultsGridState
 
     object Loading: ResultsGridState

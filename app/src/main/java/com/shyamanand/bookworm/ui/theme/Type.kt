@@ -31,12 +31,12 @@ val NanumGothic = FontFamily(
 val BookshelfTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = CormorantGaramond,
-        fontWeight = FontWeight.W700,
+        fontWeight = FontWeight.W500,
         fontSize = 30.sp
     ),
     displayMedium = TextStyle(
         fontFamily = CormorantGaramond,
-        fontWeight = FontWeight.W600,
+        fontWeight = FontWeight.W500,
         fontSize = 24.sp
     ),
     displaySmall = TextStyle(
@@ -51,7 +51,7 @@ val BookshelfTypography = Typography(
     ),
     bodyMedium = TextStyle(
         fontFamily = CormorantGaramond,
-        fontWeight = FontWeight.W300,
+        fontWeight = FontWeight.W400,
         fontSize = 24.sp
     ),
     bodySmall = TextStyle(

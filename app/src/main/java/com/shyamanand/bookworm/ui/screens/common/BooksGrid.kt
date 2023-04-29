@@ -2,13 +2,14 @@ package com.shyamanand.bookworm.ui.screens.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,30 @@ import coil.compose.AsyncImage
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.data.model.Book
 import com.shyamanand.bookworm.network.model.SearchResultItem
+
+@Composable
+fun BooksGrid(
+    books: List<Book>,
+    onCoverClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 120.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(start = 8.dp, end = 8.dp)
+    ) {
+        items(
+            items = books,
+            key = { book -> book.id }
+        ) {
+            BookCover(
+                book = it,
+                onClick = onCoverClicked
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +60,9 @@ fun BookCover(
         shape = RectangleShape,
         modifier = modifier
             .padding(start = 2.dp, end = 2.dp, top = 10.dp)
-            .size(height = height.dp, width = width.dp)
+            .size(height = height.dp, width = width.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         if (book.imageUrl != null && book.imageUrl.isNotEmpty()) {
             AsyncImage(

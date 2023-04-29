@@ -8,13 +8,13 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.shyamanand.bookworm.BookwormApplication
 import com.shyamanand.bookworm.data.BooksRepository
-import com.shyamanand.bookworm.ui.state.BookshelfScreenState
+import com.shyamanand.bookworm.ui.state.HomeScreenState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class BookshelfScreenViewModel(
+class HomeScreenViewModel(
     private val booksOfflineRepository: BooksRepository
 ) : ViewModel() {
 
@@ -25,16 +25,17 @@ class BookshelfScreenViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as BookwormApplication)
                 val booksOfflineRepository = application.container.booksOfflineRepository
-                BookshelfScreenViewModel(booksOfflineRepository = booksOfflineRepository)
+                HomeScreenViewModel(booksOfflineRepository = booksOfflineRepository)
             }
         }
     }
 
-    val bookshelfScreenState: StateFlow<BookshelfScreenState> =
-        booksOfflineRepository.getAllBooksStream().map { BookshelfScreenState(it) }
+    val homeScreenState: StateFlow<HomeScreenState> =
+        booksOfflineRepository.getAllBooksStream()
+            .map { HomeScreenState.Shelf(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = BookshelfScreenState()
+                initialValue = HomeScreenState.Init
             )
 }

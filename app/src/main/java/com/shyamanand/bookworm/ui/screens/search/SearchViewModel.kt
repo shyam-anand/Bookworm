@@ -24,8 +24,9 @@ import com.shyamanand.bookworm.ui.state.SearchbarState
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import kotlin.streams.toList
 
-class SearchScreenViewModel(
+class SearchViewModel(
     private val booksOnlineRepository: BooksOnlineRepository,
     private val textDetectionRepository: TextDetectionRepository
 ) : ViewModel() {
@@ -36,7 +37,7 @@ class SearchScreenViewModel(
                 val application = (this[APPLICATION_KEY] as BookwormApplication)
                 val booksRepository = application.container.booksOnlineRepository
                 val textDetectionRepository = application.container.textDetectionRepository
-                SearchScreenViewModel(
+                SearchViewModel(
                     booksOnlineRepository = booksRepository,
                     textDetectionRepository = textDetectionRepository
                 )
@@ -63,7 +64,10 @@ class SearchScreenViewModel(
                     "Found ${searchResult.totalItems} results for title $title"
                 )
                 if (searchResult.totalItems > 0) {
-                    ResultsGridState.Success(searchResult)
+                    val books = searchResult.items.stream()
+                        .map { it.toBook() }
+                        .toList()
+                    ResultsGridState.Success(books)
                 } else {
                     ResultsGridState.Loading
                 }

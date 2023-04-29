@@ -15,8 +15,9 @@ import com.shyamanand.bookworm.network.model.SearchResultItem
 
 const val TAG = "SearchResultsGrid"
 
+// ToDo Use SearchResultsList to show the results as a list
 @Composable
-fun SearchResultsGrid(
+fun SearchResultsList(
     onPreviewClicked: (String) -> Unit,
     searchResult: SearchResult,
     modifier: Modifier = Modifier
@@ -71,7 +72,8 @@ fun BookPreview(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Row(
             modifier = modifier.padding(top = 2.dp, bottom = 2.dp)
