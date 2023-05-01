@@ -13,7 +13,7 @@
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="add_to_shelf">Add to Shelf</string>
     <string name="cover_image">Cover image for %s</string>
-    <string name="your_books">Your books</string>
+    <string name="your_books">Your Shelf</string>
     <string name="remove_from_shelf">Remove from shelf</string>
     <string name="no_books_in_shelf">No books in your shelf</string>
     <string name="clear_search_box">Clear the search box</string>

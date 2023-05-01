@@ -7,15 +7,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shyamanand.bookworm.R
 import com.shyamanand.bookworm.data.model.Book
 import com.shyamanand.bookworm.ui.screens.common.BooksGrid
@@ -29,6 +26,7 @@ import com.shyamanand.bookworm.ui.state.ResultsGridState
 import com.shyamanand.bookworm.ui.state.SearchbarState
 import com.shyamanand.bookworm.ui.theme.BookwormTheme
 
+const val TAG = "HomeScreen"
 @Composable
 fun HomeScreen(
     searchbarState: SearchbarState,
@@ -40,11 +38,8 @@ fun HomeScreen(
     searchByImage: () -> Unit,
     onCoverClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = viewModel(
-        factory = HomeScreenViewModel.Factory
-    )
+    homeScreenViewModel: HomeScreenViewModel
 ) {
-    val homeScreenState by viewModel.homeScreenState.collectAsState()
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -64,7 +59,9 @@ fun HomeScreen(
             }
             Searchbar(
                 searchString = searchString,
-                onSearchStringChanged = onSearchStringChanged,
+                onSearchStringChanged = {
+                    onSearchStringChanged(it)
+                },
                 onSearchStringCleared = onSearchStringCleared,
                 onSearchByImageClicked = searchByImage
             )
@@ -72,7 +69,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.size(8.dp))
 
-        when (homeScreenState) {
+        when (homeScreenViewModel.state) {
             is HomeScreenState.Search -> {
                 BackHandler {
                     resetSearchbar()
@@ -87,7 +84,7 @@ fun HomeScreen(
             }
 
             is HomeScreenState.Shelf -> BookshelfScreen(
-                homeScreenState = homeScreenState as HomeScreenState.Shelf,
+                homeScreenState = homeScreenViewModel.state as HomeScreenState.Shelf,
                 modifier = modifier,
                 onCoverClicked = onCoverClicked
             )
@@ -106,7 +103,7 @@ fun SearchResults(
 ) {
     when (resultsGridState) {
         is ResultsGridState.Success -> {
-            Log.i("HomeScreen", "${resultsGridState.searchResult} results")
+            Log.i(TAG, "${resultsGridState.searchResult} results")
             when (resultsGridState.searchResult.size) {
                 0 -> NoResults()
                 else -> BooksGrid(
@@ -164,7 +161,7 @@ fun Bookshelf(
     ) {
         Spacer(modifier = Modifier.size(height = 16.dp, width = 16.dp))
         Image(
-            painterResource(R.drawable.bookstack_special_lineal),
+            painterResource(R.drawable.bookstack_special_flat),
             contentDescription = null,
             modifier = Modifier
                 .size(28.dp)

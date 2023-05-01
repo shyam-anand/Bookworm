@@ -122,6 +122,9 @@ class SearchViewModel(
             } catch (e: HttpException) {
                 Log.e(TAG, "HttpException while detecting text: " + e.stackTraceToString())
                 ResultsGridState.Error(e.stackTraceToString())
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.javaClass} while detecting text: ${e.stackTraceToString()}")
+                ResultsGridState.Error(e.stackTraceToString())
             }
         }
 

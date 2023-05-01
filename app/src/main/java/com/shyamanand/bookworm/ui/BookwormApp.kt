@@ -31,6 +31,7 @@ import com.shyamanand.bookworm.ui.screens.BookwormAppScreen
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailScreen
 import com.shyamanand.bookworm.ui.screens.bookdetails.BookDetailsScreenViewModel
 import com.shyamanand.bookworm.ui.screens.bookshelf.HomeScreen
+import com.shyamanand.bookworm.ui.screens.bookshelf.HomeScreenViewModel
 import com.shyamanand.bookworm.ui.screens.camera.CameraScreen
 import com.shyamanand.bookworm.ui.screens.camera.CameraScreenViewModel
 import com.shyamanand.bookworm.ui.screens.search.SearchScreen
@@ -103,6 +104,10 @@ fun BookwormApp(
         }
     ) { innerPadding ->
 
+        val homeScreenViewModel: HomeScreenViewModel = viewModel(
+            factory = HomeScreenViewModel.Factory
+        )
+
         val searchViewModel: SearchViewModel = viewModel(
             factory = SearchViewModel.Factory
         )
@@ -115,13 +120,42 @@ fun BookwormApp(
 
         val coroutineScope = rememberCoroutineScope()
 
-        val startScreen = BookwormAppScreen.Bookshelf
-
         NavHost(
             navController = navController,
-            startDestination = startScreen.name,
+            startDestination = BookwormAppScreen.Home.name,
             modifier = modifier.padding(innerPadding)
         ) {
+
+            composable(BookwormAppScreen.Home.name) {
+                HomeScreen(
+                    searchbarState = searchViewModel.searchbarState,
+                    resultsGridState = searchViewModel.resultsGridState,
+                    onSearchStringChanged = { searchString ->
+                        homeScreenViewModel.onSearchbarInput(searchString)
+                        searchViewModel.onSearchbarInput(searchString)
+                    },
+                    onSearchStringCleared = {
+                        homeScreenViewModel.onSearchbarInput("")
+                        searchViewModel.resetSearchbar()
+                    },
+                    onCoverClicked = { bookId ->
+                        bookDetailsScreenViewModel.loadBook(bookId)
+                        navController.navigate(BookwormAppScreen.BookDetails.name)
+                    },
+                    retryAction = { searchViewModel.search() },
+                    resetSearchbar = {
+                        homeScreenViewModel.onSearchbarInput("")
+                        searchViewModel.resetSearchbar()
+                        navController.popBackStack()
+                    },
+                    searchByImage = {
+                        cameraScreenViewModel.reset()
+                        navController.navigate(BookwormAppScreen.Camera.name)
+                    },
+                    homeScreenViewModel = homeScreenViewModel,
+                    modifier = modifier
+                )
+            }
 
             composable(BookwormAppScreen.Camera.name) {
                 CameraScreen(
@@ -134,30 +168,11 @@ fun BookwormApp(
                     onTakeAgainClicked = { cameraScreenViewModel.showCameraPreview() },
                     onSearchClicked = { imageUri, context ->
                         searchViewModel.imageSearch(imageUri, context)
-                        navController.navigate(BookwormAppScreen.Search.name)
+                        navController.navigate(BookwormAppScreen.Search.name) {
+                            Log.i(TAG, "popUpTo(${BookwormAppScreen.Home.name}")
+                            popUpTo(BookwormAppScreen.Home.name)
+                        }
                     }
-                )
-            }
-
-            composable(BookwormAppScreen.Bookshelf.name) {
-                HomeScreen(
-                    searchbarState = searchViewModel.searchbarState,
-                    resultsGridState = searchViewModel.resultsGridState,
-                    onSearchStringChanged = { searchString ->
-                        searchViewModel.onSearchbarInput(searchString)
-                    },
-                    onSearchStringCleared = { searchViewModel.resetSearchbar() },
-                    onCoverClicked = { bookId ->
-                        bookDetailsScreenViewModel.loadBook(bookId)
-                        navController.navigate(BookwormAppScreen.BookDetails.name)
-                    },
-                    retryAction = { searchViewModel.search() },
-                    resetSearchbar = { searchViewModel.resetSearchbar() },
-                    searchByImage = {
-                        cameraScreenViewModel.reset()
-                        navController.navigate(BookwormAppScreen.BookDetails.name)
-                    },
-                    modifier = modifier
                 )
             }
 
@@ -174,7 +189,10 @@ fun BookwormApp(
                         navController.navigate(BookwormAppScreen.BookDetails.name)
                     },
                     retryAction = { searchViewModel.search() },
-                    resetSearchbar = { searchViewModel.resetSearchbar() },
+                    resetSearchbar = {
+                        homeScreenViewModel.resetState()
+                        searchViewModel.resetSearchbar()
+                    },
                     searchByImage = {
                         cameraScreenViewModel.reset()
                         navController.navigate(BookwormAppScreen.Camera.name)

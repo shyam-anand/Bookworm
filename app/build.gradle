@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
     id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -73,6 +75,8 @@ dependencies {
 
     // Room & Firebase
     implementation "androidx.room:room-runtime:$room_version"
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.9'
+    implementation 'com.google.firebase:firebase-analytics:20.1.2'
     ksp "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation 'com.google.firebase:firebase-firestore:24.5.0'

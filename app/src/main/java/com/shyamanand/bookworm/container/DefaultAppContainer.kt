@@ -21,7 +21,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private fun httpInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
         // ToDo Remove
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
+//        interceptor.level = HttpLoggingInterceptor.Level.BODY
         return interceptor
     }
 

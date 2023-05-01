@@ -10,6 +10,6 @@ enum class BookwormAppScreen(
     Camera(),
     BookDetails(),
     PermissionsRequest(),
-    Bookshelf(R.drawable.bookstack_special_flat, R.drawable.bookstack_special_lineal),
+    Home(R.drawable.bookstack_special_flat, R.drawable.bookstack_special_lineal),
     Search(R.drawable.search_filled, R.drawable.search_outlined)
 }
