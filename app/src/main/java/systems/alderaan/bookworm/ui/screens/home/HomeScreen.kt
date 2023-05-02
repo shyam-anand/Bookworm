@@ -170,10 +170,10 @@ fun Bookshelf(
             stringResource(R.string.your_books),
             modifier = modifier
                 .padding(8.dp),
-            style = MaterialTheme.typography.displayLarge
+            style = MaterialTheme.typography.displayMedium
         )
     }
-//    Divider(color = MaterialTheme.colorScheme.secondary, thickness = 1.dp)
+
     BooksGrid(homeScreenState.books, onCoverClicked, modifier)
 }
 
