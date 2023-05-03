@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "812346366075",
+    "firebase_url": "https://bookworm-ef565-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "bookworm-ef565",
+    "storage_bucket": "bookworm-ef565.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812346366075:android:21e4c8214cf7924c356ade",
+        "android_client_info": {
+          "package_name": "com.shyamanand.bookworm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812346366075-0un9n5rup81353tmrk2v9h2fv7ofgnq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMXGcPl8BS2V69_c7soubL9TEFV6Bk2AE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812346366075-0un9n5rup81353tmrk2v9h2fv7ofgnq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

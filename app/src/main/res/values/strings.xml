@@ -4,16 +4,16 @@
     <string name="no_results">No results</string>
     <string name="no_results_caption">Try a different title</string>
     <string name="searchbox_label">Search for books</string>
-    <string name="searchbox_placeholder">Enter a title</string>
+    <string name="searchbox_placeholder">Enter a title, author, or ISBN</string>
     <string name="book_preview_description">Thumbnail for %s</string>
-    <string name="searchresults_caption">Showing %s out of %s results</string>
+    <string name="search_results_caption">Showing %s out of %s results</string>
     <string name="search_failed">Failed to load results.</string>
     <string name="retry">Retry</string>
     <string name="back_button">Back</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="add_to_shelf">Add to Shelf</string>
     <string name="cover_image">Cover image for %s</string>
-    <string name="your_books">Your books</string>
+    <string name="your_books">Your Shelf</string>
     <string name="remove_from_shelf">Remove from shelf</string>
     <string name="no_books_in_shelf">No books in your shelf</string>
     <string name="clear_search_box">Clear the search box</string>
@@ -24,4 +24,5 @@
     <string name="finding_books_by_image">Finding books</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="loading_shelf">Opening shelf</string>
 </resources>
